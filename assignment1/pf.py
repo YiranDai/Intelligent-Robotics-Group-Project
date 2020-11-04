@@ -8,6 +8,7 @@ from util import rotateQuaternion, getHeading
 import random
 from time import time
 
+import numpy as np
 
 def most_frequent(List):
     counter = 0
@@ -30,7 +31,7 @@ class PFLocaliser(PFLocaliserBase):
         # ----- Set motion model parameters
 
         # ----- Sensor model parameters
-        self.NUMBER_PREDICTED_READINGS = 20     # Number of readings to predict
+        self.NUMBER_PREDICTED_READINGS = 50     # Number of readings to predict
 
 
     def initialise_particle_cloud(self, initialpose):
@@ -48,15 +49,23 @@ class PFLocaliser(PFLocaliserBase):
         """
         '''
         rospy.loginfo(type(initialpose))
-        rospy.loginfo(initialpose)
         '''
+        rospy.loginfo(initialpose)
+        sd = np.std(initialpose.pose.covariance)
+        mean = 0
+        noise = 1.2
+        initialOrientation = initialpose.pose.pose.orientation
+        sdOri = np.pi/4
         # orientation, covariance, noise
         poses = PoseArray()
-        for i in range(self.NUMBER_PREDICTED_READINGS):
+        for i in range(1, self.NUMBER_PREDICTED_READINGS):
+            nd = np.random.normal(mean, sd)
+            ndOri = np.random.normal(mean, sdOri)
             pose = Pose()
-            pose.orientation = initialpose.pose.pose.orientation
-            pose.position.x = initialpose.pose.pose.position.x + random.randint(-10,10)
-            pose.position.y = initialpose.pose.pose.position.y + random.randint(-10,10)
+            #yaw = getHeading(initialOrientation) * orientationNoise
+            pose.orientation = rotateQuaternion(initialOrientation, ndOri) #getHeading(q)
+            pose.position.x = initialpose.pose.pose.position.x + nd * noise
+            pose.position.y = initialpose.pose.pose.position.y + nd * noise
             pose.position.z = initialpose.pose.pose.position.z
             poses.poses.append(pose)
 
@@ -76,10 +85,13 @@ class PFLocaliser(PFLocaliserBase):
             | scan (sensor_msgs.msg.LaserScan): laser scan to use for update
 
          """
-        #rospy.loginfo("out-dated particle cloud")
+        rospy.loginfo("out-dated particle cloud")
         #rospy.loginfo(self.particlecloud.poses)
          # idk, update particle filter based on sensor model
         poses = self.particlecloud.poses
+        for pose in poses:
+            rospy.loginfo(pose)
+            rospy.loginfo('-------------------------------')
         # 1- assign w self.sensor_model.get_weight()
         weights = []
         for i in range(len(poses)):
@@ -107,8 +119,11 @@ class PFLocaliser(PFLocaliserBase):
             #rospy.loginfo(u)
 
         # 3- self.particlecloud = poses
-        #rospy.loginfo('------------------------updated poses------------------')
+        rospy.loginfo('------------------------updated poses------------------')
         self.particlecloud.poses = resampled.poses
+        for pose in resampled.poses:
+            rospy.loginfo(pose)
+            rospy.loginfo('-------------------------------')
         #rospy.loginfo(self.particlecloud.poses)
         #rospy.loginfo('-------------------end updated------------')
 
