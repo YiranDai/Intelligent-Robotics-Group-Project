@@ -40,9 +40,10 @@ class PFLocaliser(PFLocaliserBase):
             | (geometry_msgs.msg.PoseArray) poses of the particles
         """
         #Initial belief is normally distributed
+        self.estimatedpose = initialpose
 
         mean, sd = initialpose.pose.pose.position.x , np.std(initialpose.pose.covariance)
-        self.gaussian = random.normal(loc=mean, scale=sd, size=(3,1))
+        self.gaussian = np.random.normal(loc=mean, scale=sd, size=(3,1))
         rospy.loginfo('-----------------')
         rospy.loginfo('covariance')
         rospy.loginfo(initialpose.pose.covariance)
@@ -72,8 +73,8 @@ class PFLocaliser(PFLocaliserBase):
 
     def update_particle_cloud(self, scan):
 
-        mean, sd = initialpose.pose.pose.position.x , np.std(initialpose.pose.covariance)
-        self.gaussian = random.normal(loc=mean, scale=sd, size=(3,1))
+        mean, sd = self.estimatedpose.pose.pose.position.x , np.std(self.estimatedpose.pose.covariance)
+        self.gaussian = np.random.normal(loc=mean, scale=sd, size=(3,1))
 
         rospy.loginfo('-----------------')
         rospy.loginfo('covariance')
@@ -89,6 +90,8 @@ class PFLocaliser(PFLocaliserBase):
         pass
 
     def estimate_pose(self):
+
+
         """
         This should calculate and return an updated robot pose estimate based
         on the particle cloud (self.particlecloud).
@@ -103,5 +106,6 @@ class PFLocaliser(PFLocaliserBase):
 
         :Return:
             | (geometry_msgs.msg.Pose) robot's estimated pose.
+
          """
         pass
