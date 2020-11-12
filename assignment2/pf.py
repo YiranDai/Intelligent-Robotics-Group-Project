@@ -41,21 +41,29 @@ class PFLocaliser(PFLocaliserBase):
         """
         #Initial belief is normally distributed
 
-        mean, sd = 0 , 0.1
+        mean, sd = initialpose.pose.pose.position.x , np.std(initialpose.pose.covariance)
+        self.gaussian = random.normal(loc=mean, scale=sd, size=(3,1))
+        rospy.loginfo('-----------------')
+        rospy.loginfo('covariance')
+        rospy.loginfo(initialpose.pose.covariance)
+        rospy.loginfo('-----------------')
+        rospy.loginfo('gaussian')
+        rospy.loginfo(self.gaussian)
+        rospy.loginfo('-----------------')
         noise = 6
         initialOrientation = initialpose.pose.pose.orientation
         sdOri = np.pi/4
 
         poses = self.particlecloud
 
-        for i in range(self.NUMBER_PREDICTED_READINGS):
+        for i in range(1):
             nd = np.random.normal(mean, sd,2)
             ndOri = np.random.normal(mean, sdOri)
             pose = Pose()
             #yaw = getHeading(initialOrientation) * orientationNoise
             pose.orientation = rotateQuaternion(initialOrientation, ndOri)
-            pose.position.x = initialpose.pose.pose.position.x + nd[0] * noise
-            pose.position.y = initialpose.pose.pose.position.y + nd[1] * noise
+            pose.position.x = initialpose.pose.pose.position.x
+            pose.position.y = initialpose.pose.pose.position.y
             pose.position.z = initialpose.pose.pose.position.z
             poses.poses.append(pose)
 
@@ -63,14 +71,21 @@ class PFLocaliser(PFLocaliserBase):
 
 
     def update_particle_cloud(self, scan):
-        """
-        This should use the supplied laser scan to update the current
-        particle cloud. i.e. self.particlecloud should be updated.
 
-        :Args:
-            | scan (sensor_msgs.msg.LaserScan): laser scan to use for update
+        mean, sd = initialpose.pose.pose.position.x , np.std(initialpose.pose.covariance)
+        self.gaussian = random.normal(loc=mean, scale=sd, size=(3,1))
 
-         """
+        rospy.loginfo('-----------------')
+        rospy.loginfo('covariance')
+        rospy.loginfo(self.estimatedpose.pose.covariance)
+        rospy.loginfo('-----------------')
+        rospy.loginfo('gaussian')
+        rospy.loginfo(self.gaussian)
+        rospy.loginfo('-----------------')
+        '''
+
+        '''
+
         pass
 
     def estimate_pose(self):
