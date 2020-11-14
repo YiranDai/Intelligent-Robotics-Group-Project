@@ -264,6 +264,7 @@ class PFLocaliserBase(object):
                                 (rnd * travel_x * self.ODOM_TRANSLATION_NOISE))
                 p.position.y = (p.position.y + travel_y +
                                 (rnd * travel_y * self.ODOM_DRIFT_NOISE))
+                # p.position.z = (rnd * travel_x * self.ODOM_TRANSLATION_NOISE)
 
         return time.time() - t
 

@@ -22,7 +22,7 @@ class PFLocaliser(PFLocaliserBase):
         self.ODOM_DRIFT_NOISE = 0.1 # Odometry model y axis (side-to-side) noise
 
         # ----- Sensor model parameters
-        self.NUMBER_PREDICTED_READINGS = 20     # Number of readings to predict
+        self.NUMBER_PREDICTED_READINGS = 1     # Number of readings to predict
 
 
     def initialise_particle_cloud(self, initialpose):
@@ -65,7 +65,7 @@ class PFLocaliser(PFLocaliserBase):
             pose.orientation = rotateQuaternion(initialOrientation, ndOri)
             pose.position.x = initialpose.pose.pose.position.x
             pose.position.y = initialpose.pose.pose.position.y
-            pose.position.z = initialpose.pose.pose.position.z
+            #pose.position.z = initialpose.pose.pose.position.z
             poses.poses.append(pose)
 
         return poses
@@ -73,18 +73,24 @@ class PFLocaliser(PFLocaliserBase):
 
     def update_particle_cloud(self, scan):
 
-        mean, sd = self.estimatedpose.pose.pose.position.x , np.std(self.estimatedpose.pose.covariance)
+        self.estimatedpose.pose.pose.position.x = self.particlecloud[0].position.x
+        self.estimatedpose.pose.pose.position.y = self.particlecloud[0].position.y
+        self.estimatedpose.pose.pose.orientation = self.particlecloud[0].orientation
+        '''
+        mean, sd = self.estimatedpose.pose.pose.position.x , np.std(self.estimatedpose.pose.covariance) + self.particlecloud[0].position.z
         self.gaussian = np.random.normal(loc=mean, scale=sd, size=(3,1))
+        '''
+        estimated_range = calc_map_range(self.estimatedpose.pose.pose.position.x, self.estimatedpose.pose.pose.position.y, self.estimatedpose.pose.pose.orientation):
+
 
         rospy.loginfo('-----------------')
-        rospy.loginfo('covariance')
-        rospy.loginfo(self.estimatedpose.pose.covariance)
+        rospy.loginfo('laser scan')
+        rospy.loginfo(scan)
         rospy.loginfo('-----------------')
-        rospy.loginfo('gaussian')
-        rospy.loginfo(self.gaussian)
+        rospy.loginfo('estimated range')
+        rospy.loginfo(estimated_range)
         rospy.loginfo('-----------------')
         '''
-
         '''
 
         pass
