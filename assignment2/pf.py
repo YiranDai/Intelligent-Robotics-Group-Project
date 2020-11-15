@@ -22,7 +22,7 @@ class PFLocaliser(PFLocaliserBase):
         self.ODOM_DRIFT_NOISE = 0.1 # Odometry model y axis (side-to-side) noise
 
         # ----- Sensor model parameters
-        self.NUMBER_PREDICTED_READINGS = 1     # Number of readings to predict
+        self.NUMBER_PREDICTED_READINGS = 20     # Number of readings to predict
 
 
     def initialise_particle_cloud(self, initialpose):
@@ -73,14 +73,24 @@ class PFLocaliser(PFLocaliserBase):
 
     def update_particle_cloud(self, scan):
 
-        self.estimatedpose.pose.pose.position.x = self.particlecloud[0].position.x
-        self.estimatedpose.pose.pose.position.y = self.particlecloud[0].position.y
-        self.estimatedpose.pose.pose.orientation = self.particlecloud[0].orientation
+
+        self.estimatedpose.pose.pose.position.x = self.particlecloud.poses[0].position.x
+        self.estimatedpose.pose.pose.position.y = self.particlecloud.poses[0].position.y
+        self.estimatedpose.pose.pose.orientation = self.particlecloud.poses[0].orientation
+
+        '''
+        self.estimatedpose.pose.pose.position = self.particlecloud[0].poses.position
+        '''
+
         '''
         mean, sd = self.estimatedpose.pose.pose.position.x , np.std(self.estimatedpose.pose.covariance) + self.particlecloud[0].position.z
         self.gaussian = np.random.normal(loc=mean, scale=sd, size=(3,1))
         '''
-        estimated_range = calc_map_range(self.estimatedpose.pose.pose.position.x, self.estimatedpose.pose.pose.position.y, self.estimatedpose.pose.pose.orientation):
+        rospy.loginfo('calc map')
+        ox = self.estimatedpose.pose.pose.position.x
+        oy = self.estimatedpose.pose.pose.position.y
+        oa = getHeading(self.estimatedpose.pose.pose.orientation) * (180/np.pi)
+        estimated_range = self.sensor_model.calc_map_range(ox, oy, oa)
 
 
         rospy.loginfo('-----------------')
