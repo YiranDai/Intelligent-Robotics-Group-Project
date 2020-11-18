@@ -72,6 +72,9 @@ class PFLocaliserBase(object):
         # ----- Sensor model
         self.sensor_model =  sensor_model.SensorModel()
 
+
+        self.vel = None
+
     def initialise_particle_cloud(self, initialpose):
         """
         Called whenever an initialpose message is received (to change the
@@ -108,8 +111,8 @@ class PFLocaliserBase(object):
             # ----- Call user-implemented particle filter update method
             self.update_particle_cloud(scan)
             self.particlecloud.header.frame_id = "/map"
-            rospy.loginfo("-------est---------")
-            rospy.loginfo(self.estimatedpose)
+            #rospy.loginfo("-------est---------")
+            #rospy.loginfo(self.estimatedpose)
             self.estimatedpose.pose.pose = self.estimate_pose()
             currentTime = rospy.Time.now()
 
@@ -285,3 +288,4 @@ class PFLocaliserBase(object):
         rospy.loginfo("Particle filter got map. (Re)initialising.")
         self.particlecloud = self.initialise_particle_cloud(self.estimatedpose)
         self.particlecloud.header.frame_id = "/map"
+
