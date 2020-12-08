@@ -18,7 +18,7 @@
     <arg name="move_forward_only" value="$(arg move_forward_only)"/>
   </include>
 
-   <!-- 启动 rviz 的标签 -->
+   <!-- rviz -->
   <group if="$(arg open_rviz)">
     <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find explore_lite)/rviz/turtlebot3_hector.rviz"/>
   </group>
