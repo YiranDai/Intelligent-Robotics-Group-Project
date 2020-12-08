@@ -1,1 +1,1 @@
-Compulsory yaml files of path planner
+Compulsory files of path planner parameters
