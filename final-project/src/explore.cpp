@@ -166,7 +166,7 @@ void Explore::visualizeFrontiers(const std::vector<frontier_exploration::Frontie
 }
 
 void Explore::makePlan() {
-    // get the info of pose, odom, from costmao
+    // get the info of pose, odom, from costmap
     auto pose = costmap_client_.getRobotPose();
 
     auto frontiers = search_.searchFrom(pose.position);
