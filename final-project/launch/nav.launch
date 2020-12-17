@@ -4,8 +4,8 @@
   <arg name="model" default="burger" />
   <arg name="configuration_basename" default="turtlebot3_lds_2d.lua"/>
   <arg name="open_rviz" default="true"/>
-  <arg name="world_name" default="$(find explore_lite)/worlds/0911.world"/>
-  <arg name="map_file" default="$(find explore_lite)/maps/hector.yaml"/>
+  <arg name="world_name" default="$(find explore_lite)/worlds/themap.world"/>
+  <arg name="map_file" default="$(find explore_lite)/maps/map.yaml"/>
   <include file="$(find explore_lite)/launch/turtlebot3_remote.launch">
     <arg name="model" value="$(arg model)" />
   </include>
